@@ -24,9 +24,9 @@ class IMAGE_VIEWER_Scene(QtWidgets.QGraphicsScene):
         
         if event.type() == QtCore.QEvent.GraphicsSceneMousePress:        
             self.mouse_press = True
+            self.mouse_pos_init = mouse_pos
             
             if event.buttons() == QtCore.Qt.LeftButton or event.buttons() == QtCore.Qt.MiddleButton:
-                self.mouse_pos_init = mouse_pos
                 self.widget_x_pos = self._parent.pos().x()
                 self.widget_y_pos = self._parent.pos().y()
             elif event.buttons() == QtCore.Qt.RightButton:
@@ -54,13 +54,14 @@ class IMAGE_VIEWER_Scene(QtWidgets.QGraphicsScene):
             diff_x = x-x_init
             diff_y = y-y_init
             
-            if event.buttons() == QtCore.Qt.LeftButton or event.buttons() == QtCore.Qt.MiddleButton:
-                self._parent.move(self.widget_x_pos+diff_x, self.widget_y_pos+diff_y)
-                
-            elif event.buttons() == QtCore.Qt.RightButton:
-                self._parent.resize(self.widget_width+diff_x, self.widget_height+diff_y)
+            if event.buttons():
+                if event.buttons() == QtCore.Qt.LeftButton or event.buttons() == QtCore.Qt.MiddleButton:
+                    self._parent.move(self.widget_x_pos+diff_x, self.widget_y_pos+diff_y)
+                    
+                elif event.buttons() == QtCore.Qt.RightButton:
+                    self._parent.resize(self.widget_width+diff_x, self.widget_height+diff_y)
             
-            
+        
         return True
 
 class IMAGE_VIEWER_Widget(QtWidgets.QWidget):
