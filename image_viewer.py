@@ -4,16 +4,6 @@ import sys, logging, os
 from PyQt5 import QtGui, QtWidgets, QtCore
 
 
-# QGraphicsView ??
-# http://vincent-vande-vyvre.developpez.com/tutoriels/pyqt/manipulation-images/
-# https://openclassrooms.com/courses/le-gui-avec-qt-la-suite/commencons-3
-
-# exemple:
-# https://github.com/marcel-goldschen-ohm/ImageViewerPyQt/blob/master/ImageViewerQt.py
-
-# http://pyqt.sourceforge.net/Docs/PyQt4/qevent.html
-
-
 class IMAGE_VIEWER_View(QtWidgets.QGraphicsView):
     def __init__(self, parent=None):
         super().__init__()
@@ -32,21 +22,22 @@ class IMAGE_VIEWER_Scene(QtWidgets.QGraphicsScene):
         x = mouse_pos.x()
         y = mouse_pos.y()
         
-        if event.type() == QtCore.QEvent.GraphicsSceneMousePress:
+        if event.type() == QtCore.QEvent.GraphicsSceneMousePress:        
             self.mouse_press = True
-            self.mouse_pos_init = mouse_pos
-            self.widget_x = self._parent.pos().x()
-            self.widget_y = self._parent.pos().y()
             
-            if event.buttons() == QtCore.Qt.LeftButton:
-                print ("Left click")
+            if event.buttons() == QtCore.Qt.LeftButton or event.buttons() == QtCore.Qt.MiddleButton:
+                self.mouse_pos_init = mouse_pos
+                self.widget_x_pos = self._parent.pos().x()
+                self.widget_y_pos = self._parent.pos().y()
             elif event.buttons() == QtCore.Qt.RightButton:
-                print ("Right click")
-            elif event.buttons() == QtCore.Qt.MiddleButton:
-                print ("Middle click")
+                self.widget_width = self._parent.width()
+                self.widget_height = self._parent.height()
+                
+                
             
         elif event.type() == QtCore.QEvent.GraphicsSceneMouseMove:
             self.mouse_move = True
+                
             
         elif event.type() == QtCore.QEvent.GraphicsSceneMouseRelease:
             self.mouse_press = False
@@ -56,21 +47,20 @@ class IMAGE_VIEWER_Scene(QtWidgets.QGraphicsScene):
             if event.key() == QtCore.Qt.Key_Escape:
                 self._parent.close()
         
-        
-        
         self.mouse_drag = (self.mouse_press and self.mouse_move)
-        
         if self.mouse_drag:
             x_init = self.mouse_pos_init.x()
             y_init = self.mouse_pos_init.y()
             diff_x = x-x_init
             diff_y = y-y_init
-            self._parent.move(self.widget_x+diff_x, self.widget_y+diff_y)
+            
+            if event.buttons() == QtCore.Qt.LeftButton or event.buttons() == QtCore.Qt.MiddleButton:
+                self._parent.move(self.widget_x_pos+diff_x, self.widget_y_pos+diff_y)
+                
+            elif event.buttons() == QtCore.Qt.RightButton:
+                self._parent.resize(self.widget_width+diff_x, self.widget_height+diff_y)
             
             
-        
-        
-        
         return True
 
 class IMAGE_VIEWER_Widget(QtWidgets.QWidget):
@@ -108,9 +98,9 @@ class IMAGE_VIEWER_Widget(QtWidgets.QWidget):
         self.view.fitInView(self.scene.sceneRect(), QtCore.Qt.KeepAspectRatio)
     
     def mouseDoubleClickEvent(self, event):
-        print ('double clic')
-        #QtCore.QCoreApplication.instance().quit()
-        self.close()
+        if event.buttons() == QtCore.Qt.LeftButton:
+            #QtCore.QCoreApplication.instance().quit()
+            self.close()
         
     '''
     def mousePressEvent(self, event):
