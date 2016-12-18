@@ -102,20 +102,16 @@ class IMAGE_VIEWER_Widget(QtWidgets.QWidget):
         if event.buttons() == QtCore.Qt.LeftButton:
             #QtCore.QCoreApplication.instance().quit()
             self.close()
-        
-    '''
-    def mousePressEvent(self, event):
-        print ('mousePress')
-        self.offset = event.pos()
-
-    def mouseMoveEvent(self, event):
-        print ('mouseMove')
-        if event.buttons() == QtCore.Qt.LeftButton:
-            print ("Left click drag")
-        elif event.buttons() == QtCore.Qt.RightButton:
-            print ("Right click drag")
-    '''
-
+    
+    def wheelEvent(self, event):
+        delta = event.angleDelta() / 120
+        delta = delta.y()
+        scale = 1.05
+        if delta >= 1:
+            self.view.scale(scale, scale)
+        else:
+            self.view.scale(1/scale, 1/scale)
+    
     def setImage(self, image_path):
         self.pixmap = QtGui.QPixmap(image_path)
         
@@ -132,11 +128,9 @@ class IMAGE_VIEWER_Widget(QtWidgets.QWidget):
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     #nw_utils.setStyleSheet(app)
-    
     viewer = IMAGE_VIEWER_Widget()
     #viewer.setImage("//NWAVE/PROJECTS/SOB/RENDER_COMPO/ref_grading/200/comp/int/final/200_0060_int_ref_grading_final_l.0596.jpg")
     viewer.setImage("/home/vincent/branch.png")
-    
-    
     sys.exit(app.exec())
+    
 
