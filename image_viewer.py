@@ -7,6 +7,7 @@ from PyQt5 import QtGui, QtWidgets, QtCore
 class IMAGE_VIEWER_View(QtWidgets.QGraphicsView):
     def __init__(self, parent=None):
         super().__init__()
+        
 
 class IMAGE_VIEWER_Scene(QtWidgets.QGraphicsScene):
     def __init__(self, parent=None):
@@ -16,6 +17,7 @@ class IMAGE_VIEWER_Scene(QtWidgets.QGraphicsScene):
         self.mouse_move = None
         self.mouse_drag = None
         self.installEventFilter(self)
+        
 
     def eventFilter(self, object, event):
         mouse_pos = QtGui.QCursor().pos()
@@ -79,15 +81,13 @@ class IMAGE_VIEWER_Widget(QtWidgets.QWidget):
         
         
     def initUI(self):
-        #self.setGeometry(2000, 300, 720, 300)
         self.resize(720, 300)
-        #self.move(QtWidgets.QDesktopWidget().availableGeometry().center())
-        
         self.setWindowTitle("Image Viewer")
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.FramelessWindowHint)
         
         hlayout = QtWidgets.QHBoxLayout()
         hlayout.addWidget(self.view)
+        hlayout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(hlayout)
         
         self.show()
@@ -125,12 +125,23 @@ class IMAGE_VIEWER_Widget(QtWidgets.QWidget):
         
         
 
+def setStyleSheet(app, style_path):
+    file_qss = QtCore.QFile(style_path)
+    if file_qss.exists():
+        file_qss.open(QtCore.QFile.ReadOnly)
+        styleSheet = QtCore.QTextStream(file_qss).readAll()
+        app.setStyleSheet(styleSheet)
+        file_qss.close()
+
+
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
-    #nw_utils.setStyleSheet(app)
+    app.setStyle("Plastique")
+    #qt_utils.setStyleSheet(app)
+    setStyleSheet(app, 'style.qss')
     viewer = IMAGE_VIEWER_Widget()
-    #viewer.setImage("//NWAVE/PROJECTS/SOB/RENDER_COMPO/ref_grading/200/comp/int/final/200_0060_int_ref_grading_final_l.0596.jpg")
-    viewer.setImage("/home/vincent/branch.png")
+    viewer.setImage("//NWAVE/PROJECTS/SOB/RENDER_COMPO/ref_grading/200/comp/int/final/200_0060_int_ref_grading_final_l.0596.jpg")
+    #viewer.setImage("/home/vincent/branch.png")
     sys.exit(app.exec())
     
 
