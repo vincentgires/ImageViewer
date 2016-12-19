@@ -1,0 +1,99 @@
+
+
+QWidget
+{
+    color: silver;
+    background-color: black;
+    padding: 0px;
+    margin: 0px;
+    border: none;
+}
+/*
+QGraphicsScene
+{
+    padding: 0px;
+    margin: 0px;
+    border: none;
+}
+*/
+QGraphicsView
+{
+    background-color: #343434;
+    padding: 0px;
+    margin: 0px;
+    border: 0;
+}
+
+QAbstractScrollArea
+{
+    padding: 0px;
+    margin: 0px;
+    border: none;
+}
+
+QHBoxLayout
+{
+    padding: 0px;
+    margin: 0px;
+    border: none;
+}
+
+QScrollBar {
+    /*border: 1px solid #222222;*/
+}
+
+QScrollBar:vertical {
+     margin: 15px 0 15px 0;
+}
+
+QScrollBar:horizontal {
+     margin: 0px 15px 0 15px;
+}
+
+QScrollBar::handle
+{
+    background-color: #272525;
+    /*border: 1px solid grey;*/
+    margin: 2px;
+    border-radius: 1px;
+}
+
+QScrollBar::add-line, QScrollBar::sub-line
+{
+    /*border: 1px solid grey;*/
+    border-radius: 2px;
+    background-color: #272525;
+    height: 14px;
+    width: 14px;
+    subcontrol-origin: margin;
+    margin: 1px;
+}
+
+QScrollBar::add-line:vertical {
+    subcontrol-position: bottom;
+}
+
+QScrollBar::add-line:horizontal {
+    subcontrol-position: right;
+}
+
+QScrollBar::sub-line:vertical {
+    subcontrol-position: top;
+}
+
+QScrollBar::sub-line:horizontal {
+    subcontrol-position: left;
+}
+
+QScrollBar::up-arrow, QScrollBar::down-arrow, QScrollBar::right-arrow, QScrollBar::left-arrow
+{
+    width: 6px;
+    height: 1px;
+    background-color: silver;
+}
+
+
+QScrollBar::add-page, QScrollBar::sub-page
+{
+    background-color: none;
+}
