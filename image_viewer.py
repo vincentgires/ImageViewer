@@ -13,9 +13,19 @@ class IMAGE_VIEWER_Scene(QtWidgets.QGraphicsScene):
     def __init__(self, parent=None):
         super().__init__()
         self._parent = parent
-        self.mouse_press = None
         self.mouse_move = None
         self.mouse_drag = None
+        
+        self.rightclic_press = False
+        self.middleclic_press = False
+        self.leftclic_press = False
+        
+        self.mouse_pos_init = None
+        self.widget_x_pos = None
+        self.widget_y_pos = None
+        self.widget_width = None
+        self.widget_height = None
+        
         self.installEventFilter(self)
         
 
@@ -24,45 +34,54 @@ class IMAGE_VIEWER_Scene(QtWidgets.QGraphicsScene):
         x = mouse_pos.x()
         y = mouse_pos.y()
         
+        
         if event.type() == QtCore.QEvent.GraphicsSceneMousePress:        
-            self.mouse_press = True
             self.mouse_pos_init = mouse_pos
+            self.widget_x_pos = self._parent.pos().x()
+            self.widget_y_pos = self._parent.pos().y()
+            self.widget_width = self._parent.width()
+            self.widget_height = self._parent.height()
             
-            if event.buttons() == QtCore.Qt.LeftButton or event.buttons() == QtCore.Qt.MiddleButton:
-                self.widget_x_pos = self._parent.pos().x()
-                self.widget_y_pos = self._parent.pos().y()
+            if event.buttons() == QtCore.Qt.LeftButton:
+                self.leftclic_press = True
+            elif event.buttons() == QtCore.Qt.MiddleButton:
+                self.middleclic_press = True
             elif event.buttons() == QtCore.Qt.RightButton:
-                self.widget_width = self._parent.width()
-                self.widget_height = self._parent.height()
+                self.rightclic_press = True
                 
                 
-            
+        
         elif event.type() == QtCore.QEvent.GraphicsSceneMouseMove:
             self.mouse_move = True
-                
-            
+        
         elif event.type() == QtCore.QEvent.GraphicsSceneMouseRelease:
-            self.mouse_press = False
             self.mouse_move = False
+            self.rightclic_press = False
+            self.middleclic_press = False
+            self.leftclic_press = False
+            
+            
             
         elif event.type() == QtCore.QEvent.KeyPress:
             if event.key() == QtCore.Qt.Key_Escape:
                 self._parent.close()
         
-        self.mouse_drag = (self.mouse_press and self.mouse_move)
+        
+        self.mouse_drag = (self.leftclic_press and self.mouse_move)\
+                        or (self.middleclic_press and self.mouse_move)\
+                        or (self.rightclic_press and self.mouse_move)
+        
         if self.mouse_drag:
             x_init = self.mouse_pos_init.x()
             y_init = self.mouse_pos_init.y()
             diff_x = x-x_init
             diff_y = y-y_init
             
-            if event.buttons():
-                if event.buttons() == QtCore.Qt.LeftButton or event.buttons() == QtCore.Qt.MiddleButton:
-                    self._parent.move(self.widget_x_pos+diff_x, self.widget_y_pos+diff_y)
-                    
-                elif event.buttons() == QtCore.Qt.RightButton:
-                    self._parent.resize(self.widget_width+diff_x, self.widget_height+diff_y)
-            
+            if self.leftclic_press or self.middleclic_press:
+                self._parent.move(self.widget_x_pos+diff_x, self.widget_y_pos+diff_y)
+            elif self.rightclic_press:
+                self._parent.resize(self.widget_width+diff_x, self.widget_height+diff_y)
+             
         
         return True
 
@@ -100,7 +119,6 @@ class IMAGE_VIEWER_Widget(QtWidgets.QWidget):
     
     def mouseDoubleClickEvent(self, event):
         if event.buttons() == QtCore.Qt.LeftButton:
-            #QtCore.QCoreApplication.instance().quit()
             self.close()
     
     def wheelEvent(self, event):
@@ -114,10 +132,8 @@ class IMAGE_VIEWER_Widget(QtWidgets.QWidget):
     
     def setImage(self, image_path):
         self.pixmap = QtGui.QPixmap(image_path)
-        
         self.scene.addPixmap(self.pixmap)
         self.view.setScene(self.scene)
-        
         self.view.fitInView(self.scene.sceneRect(), QtCore.Qt.KeepAspectRatio)
         
         

@@ -3,7 +3,7 @@
 QWidget
 {
     color: silver;
-    background-color: black;
+    background-color: #343434;
     padding: 0px;
     margin: 0px;
     border: none;
@@ -31,12 +31,6 @@ QAbstractScrollArea
     border: none;
 }
 
-QHBoxLayout
-{
-    padding: 0px;
-    margin: 0px;
-    border: none;
-}
 
 QScrollBar {
     /*border: 1px solid #222222;*/
