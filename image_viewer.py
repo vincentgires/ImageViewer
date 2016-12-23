@@ -80,6 +80,7 @@ class IMAGE_VIEWER_Scene(QtWidgets.QGraphicsScene):
             if self.leftclic_press or self.middleclic_press:
                 self._parent.move(self.widget_x_pos+diff_x, self.widget_y_pos+diff_y)
             elif self.rightclic_press:
+                self._parent.move(self.widget_x_pos-diff_x/2, self.widget_y_pos-diff_y/2)
                 self._parent.resize(self.widget_width+diff_x, self.widget_height+diff_y)
              
         
