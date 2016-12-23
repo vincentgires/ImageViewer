@@ -113,6 +113,7 @@ class IMAGE_VIEWER_Widget(QtWidgets.QWidget):
     
     def closeEvent(self, event):
         self.widget_close = True
+        self.deleteLater()
     
     def resizeEvent(self, event):
         self.view.fitInView(self.scene.sceneRect(), QtCore.Qt.KeepAspectRatio)
