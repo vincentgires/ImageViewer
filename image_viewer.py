@@ -81,9 +81,11 @@ class IMAGE_VIEWER_Scene(QtWidgets.QGraphicsScene):
             center_x_init = self.widget_center_init.x()
             center_y_init = self.widget_center_init.y()
             
-            
+            # DRAG MOVE
             if self.leftclic_press or self.middleclic_press:
                 self._parent.move(self.widget_x_pos+diff_x, self.widget_y_pos+diff_y)
+            
+            # RESIZE
             elif self.rightclic_press:
                 # RIGHT
                 if x_init > center_x_init:
@@ -143,7 +145,7 @@ class IMAGE_VIEWER_Widget(QtWidgets.QWidget):
     def mouseDoubleClickEvent(self, event):
         if event.buttons() == QtCore.Qt.LeftButton:
             self.close()
-    
+        
     def wheelEvent(self, event):
         delta = event.angleDelta() / 120
         delta = delta.y()
