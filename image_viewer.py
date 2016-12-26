@@ -25,6 +25,7 @@ class IMAGE_VIEWER_Scene(QtWidgets.QGraphicsScene):
         self.widget_y_pos = None
         self.widget_width = None
         self.widget_height = None
+        self.widget_center_init = None
         
         self.installEventFilter(self)
         
@@ -41,6 +42,7 @@ class IMAGE_VIEWER_Scene(QtWidgets.QGraphicsScene):
             self.widget_y_pos = self._parent.pos().y()
             self.widget_width = self._parent.width()
             self.widget_height = self._parent.height()
+            self.widget_center_init = self._parent.frameGeometry().center()
             
             if event.buttons() == QtCore.Qt.LeftButton:
                 self.leftclic_press = True
@@ -76,12 +78,31 @@ class IMAGE_VIEWER_Scene(QtWidgets.QGraphicsScene):
             y_init = self.mouse_pos_init.y()
             diff_x = x-x_init
             diff_y = y-y_init
+            center_x_init = self.widget_center_init.x()
+            center_y_init = self.widget_center_init.y()
+            
             
             if self.leftclic_press or self.middleclic_press:
                 self._parent.move(self.widget_x_pos+diff_x, self.widget_y_pos+diff_y)
             elif self.rightclic_press:
-                self._parent.move(self.widget_x_pos-diff_x/2, self.widget_y_pos-diff_y/2)
-                self._parent.resize(self.widget_width+diff_x, self.widget_height+diff_y)
+                # RIGHT
+                if x_init > center_x_init:
+                    # UP
+                    if y_init < center_y_init:
+                        self._parent.move(self.widget_x_pos, self.widget_y_pos+diff_y)
+                        self._parent.resize(self.widget_width+diff_x, self.widget_height-diff_y)
+                    # BOTTOM
+                    else:
+                        self._parent.resize(self.widget_width+diff_x, self.widget_height+diff_y)
+                # LEFT
+                else:
+                    if y_init < center_y_init:
+                        self._parent.move(self.widget_x_pos+diff_x, self.widget_y_pos+diff_y)
+                        self._parent.resize(self.widget_width-diff_x, self.widget_height-diff_y)
+                    # BOTTOM
+                    else:
+                        self._parent.move(self.widget_x_pos+diff_x, self.widget_y_pos)
+                        self._parent.resize(self.widget_width-diff_x, self.widget_height+diff_y)
              
         
         return True
