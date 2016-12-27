@@ -14,9 +14,6 @@ class IMAGE_VIEWER_View(QtWidgets.QGraphicsView):
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         
-        #self.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
-        self.setDragMode(QtWidgets.QGraphicsView.NoDrag)
-        
         self.installEventFilter(self)
         
         
@@ -153,7 +150,7 @@ class IMAGE_VIEWER_Widget(QtWidgets.QWidget):
     def initUI(self):
         self.resize(720, 300)
         self.setWindowTitle("Image Viewer")
-        self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.FramelessWindowHint)
+        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.FramelessWindowHint)
         
         hlayout = QtWidgets.QHBoxLayout()
         hlayout.addWidget(self.view)
