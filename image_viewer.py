@@ -7,6 +7,32 @@ from PyQt5 import QtGui, QtWidgets, QtCore
 class IMAGE_VIEWER_View(QtWidgets.QGraphicsView):
     def __init__(self, parent=None):
         super().__init__()
+        self.fit_in_view = True
+        
+        self.verticalScrollBar().setEnabled(False)
+        self.horizontalScrollBar().setEnabled(False)
+        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        
+        #self.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
+        self.setDragMode(QtWidgets.QGraphicsView.NoDrag)
+        
+        self.installEventFilter(self)
+        
+        
+        
+    def eventFilter(self, object, event):
+        if event.type() == QtCore.QEvent.KeyPress:
+            if event.key() == QtCore.Qt.Key_F:
+                if self.fit_in_view:
+                    self.fit_in_view = False
+                    self.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
+                else:
+                    self.fit_in_view = True
+                    self.fitInView(self.sceneRect(), QtCore.Qt.KeepAspectRatio)
+                    self.setDragMode(QtWidgets.QGraphicsView.NoDrag)
+                    
+        return QtWidgets.QWidget.eventFilter(self, object, event)
         
 
 class IMAGE_VIEWER_Scene(QtWidgets.QGraphicsScene):
@@ -67,6 +93,7 @@ class IMAGE_VIEWER_Scene(QtWidgets.QGraphicsScene):
         elif event.type() == QtCore.QEvent.KeyPress:
             if event.key() == QtCore.Qt.Key_Escape:
                 self._parent.close()
+                
         
         
         self.mouse_drag = (self.leftclic_press and self.mouse_move)\
@@ -82,7 +109,7 @@ class IMAGE_VIEWER_Scene(QtWidgets.QGraphicsScene):
             center_y_init = self.widget_center_init.y()
             
             # DRAG MOVE
-            if self.leftclic_press or self.middleclic_press:
+            if self.middleclic_press:
                 self._parent.move(self.widget_x_pos+diff_x, self.widget_y_pos+diff_y)
             
             # RESIZE
@@ -107,7 +134,7 @@ class IMAGE_VIEWER_Scene(QtWidgets.QGraphicsScene):
                         self._parent.resize(self.widget_width-diff_x, self.widget_height+diff_y)
              
         
-        return True
+        return QtWidgets.QWidget.eventFilter(self, object, event)
 
 class IMAGE_VIEWER_Widget(QtWidgets.QWidget):
     def __init__(self):
@@ -140,7 +167,8 @@ class IMAGE_VIEWER_Widget(QtWidgets.QWidget):
         self.deleteLater()
     
     def resizeEvent(self, event):
-        self.view.fitInView(self.scene.sceneRect(), QtCore.Qt.KeepAspectRatio)
+        if self.view.fit_in_view:
+            self.view.fitInView(self.scene.sceneRect(), QtCore.Qt.KeepAspectRatio)
     
     def mouseDoubleClickEvent(self, event):
         if event.buttons() == QtCore.Qt.LeftButton:
@@ -154,12 +182,17 @@ class IMAGE_VIEWER_Widget(QtWidgets.QWidget):
             self.view.scale(scale, scale)
         else:
             self.view.scale(1/scale, 1/scale)
+        
+        if self.view.fit_in_view:
+            self.view.fit_in_view = False
+            self.view.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
     
     def setImage(self, image_path):
         self.pixmap = QtGui.QPixmap(image_path)
         self.scene.addPixmap(self.pixmap)
         self.view.setScene(self.scene)
-        self.view.fitInView(self.scene.sceneRect(), QtCore.Qt.KeepAspectRatio)
+        if self.view.fit_in_view:
+            self.view.fitInView(self.scene.sceneRect(), QtCore.Qt.KeepAspectRatio)
         
         
         
