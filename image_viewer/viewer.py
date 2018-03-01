@@ -4,7 +4,7 @@ import sys, logging, os
 from PyQt5 import QtGui, QtWidgets, QtCore
 
 
-class IMAGE_VIEWER_View(QtWidgets.QGraphicsView):
+class ImageViewerGraphicView(QtWidgets.QGraphicsView):
     def __init__(self, parent=None):
         super().__init__()
         self.fit_in_view = True
@@ -15,8 +15,6 @@ class IMAGE_VIEWER_View(QtWidgets.QGraphicsView):
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         
         self.installEventFilter(self)
-        
-        
         
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.KeyPress:
@@ -30,9 +28,9 @@ class IMAGE_VIEWER_View(QtWidgets.QGraphicsView):
                     self.setDragMode(QtWidgets.QGraphicsView.NoDrag)
                     
         return QtWidgets.QWidget.eventFilter(self, object, event)
-        
 
-class IMAGE_VIEWER_Scene(QtWidgets.QGraphicsScene):
+
+class ImageViewerGraphicScene(QtWidgets.QGraphicsScene):
     def __init__(self, parent=None):
         super().__init__()
         self._parent = parent
@@ -51,13 +49,11 @@ class IMAGE_VIEWER_Scene(QtWidgets.QGraphicsScene):
         self.widget_center_init = None
         
         self.installEventFilter(self)
-        
-
+    
     def eventFilter(self, object, event):
         mouse_pos = QtGui.QCursor().pos()
         x = mouse_pos.x()
         y = mouse_pos.y()
-        
         
         if event.type() == QtCore.QEvent.GraphicsSceneMousePress:        
             self.mouse_pos_init = mouse_pos
@@ -73,8 +69,6 @@ class IMAGE_VIEWER_Scene(QtWidgets.QGraphicsScene):
                 self.middleclic_press = True
             elif event.buttons() == QtCore.Qt.RightButton:
                 self.rightclic_press = True
-                
-                
         
         elif event.type() == QtCore.QEvent.GraphicsSceneMouseMove:
             self.mouse_move = True
@@ -84,14 +78,10 @@ class IMAGE_VIEWER_Scene(QtWidgets.QGraphicsScene):
             self.rightclic_press = False
             self.middleclic_press = False
             self.leftclic_press = False
-            
-            
-            
+        
         elif event.type() == QtCore.QEvent.KeyPress:
             if event.key() == QtCore.Qt.Key_Escape:
                 self._parent.close()
-                
-        
         
         self.mouse_drag = (self.leftclic_press and self.mouse_move)\
                         or (self.middleclic_press and self.mouse_move)\
@@ -107,7 +97,8 @@ class IMAGE_VIEWER_Scene(QtWidgets.QGraphicsScene):
             
             # DRAG MOVE
             if self.middleclic_press:
-                self._parent.move(self.widget_x_pos+diff_x, self.widget_y_pos+diff_y)
+                self._parent.move(self.widget_x_pos+diff_x,
+                                  self.widget_y_pos+diff_y)
             
             # RESIZE
             elif self.rightclic_press:
@@ -115,42 +106,47 @@ class IMAGE_VIEWER_Scene(QtWidgets.QGraphicsScene):
                 if x_init > center_x_init:
                     # UP
                     if y_init < center_y_init:
-                        self._parent.move(self.widget_x_pos, self.widget_y_pos+diff_y)
-                        self._parent.resize(self.widget_width+diff_x, self.widget_height-diff_y)
+                        self._parent.move(self.widget_x_pos,
+                                          self.widget_y_pos+diff_y)
+                        self._parent.resize(self.widget_width+diff_x,
+                                            self.widget_height-diff_y)
                     # BOTTOM
                     else:
-                        self._parent.resize(self.widget_width+diff_x, self.widget_height+diff_y)
+                        self._parent.resize(self.widget_width+diff_x,
+                                            self.widget_height+diff_y)
                 # LEFT
                 else:
                     if y_init < center_y_init:
-                        self._parent.move(self.widget_x_pos+diff_x, self.widget_y_pos+diff_y)
-                        self._parent.resize(self.widget_width-diff_x, self.widget_height-diff_y)
+                        self._parent.move(self.widget_x_pos+diff_x,
+                                          self.widget_y_pos+diff_y)
+                        self._parent.resize(self.widget_width-diff_x,
+                                            self.widget_height-diff_y)
                     # BOTTOM
                     else:
-                        self._parent.move(self.widget_x_pos+diff_x, self.widget_y_pos)
-                        self._parent.resize(self.widget_width-diff_x, self.widget_height+diff_y)
-             
+                        self._parent.move(self.widget_x_pos+diff_x,
+                                          self.widget_y_pos)
+                        self._parent.resize(self.widget_width-diff_x,
+                                            self.widget_height+diff_y)
         
         return QtWidgets.QWidget.eventFilter(self, object, event)
 
-class IMAGE_VIEWER_Widget(QtWidgets.QWidget):
+
+class ImageViewerWidget(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         
-        self.widget_close = None
         self.pixmap = None
-        self.scene = IMAGE_VIEWER_Scene(parent=self)
-        self.view = IMAGE_VIEWER_View(parent=self)
+        self.scene = ImageViewerGraphicScene(parent=self)
+        self.view = ImageViewerGraphicView(parent=self)
         
         self.installEventFilter(self)
-        
         self.initUI()
-        
         
     def initUI(self):
         self.resize(720, 300)
-        self.setWindowTitle("Image Viewer")
-        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.FramelessWindowHint)
+        self.setWindowTitle('Image Viewer')
+        self.setWindowFlags(
+            QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.FramelessWindowHint)
         
         hlayout = QtWidgets.QHBoxLayout()
         hlayout.addWidget(self.view)
@@ -160,17 +156,17 @@ class IMAGE_VIEWER_Widget(QtWidgets.QWidget):
         self.show()
     
     def closeEvent(self, event):
-        self.widget_close = True
         self.deleteLater()
     
     def resizeEvent(self, event):
         if self.view.fit_in_view:
-            self.view.fitInView(self.scene.sceneRect(), QtCore.Qt.KeepAspectRatio)
+            self.view.fitInView(self.scene.sceneRect(),
+                                QtCore.Qt.KeepAspectRatio)
     
     def mouseDoubleClickEvent(self, event):
         if event.buttons() == QtCore.Qt.LeftButton:
             self.close()
-        
+    
     def wheelEvent(self, event):
         delta = event.angleDelta() / 120
         delta = delta.y()
@@ -184,19 +180,16 @@ class IMAGE_VIEWER_Widget(QtWidgets.QWidget):
             self.view.fit_in_view = False
             self.view.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
     
-    def setImage(self, image_path):
+    def set_image(self, image_path):
         self.pixmap = QtGui.QPixmap(image_path)
         self.scene.addPixmap(self.pixmap)
         self.view.setScene(self.scene)
         if self.view.fit_in_view:
-            self.view.fitInView(self.scene.sceneRect(), QtCore.Qt.KeepAspectRatio)
-        
-        
-        
-        
-        
+            self.view.fitInView(self.scene.sceneRect(),
+                                QtCore.Qt.KeepAspectRatio)
 
-def setStyleSheet(app, style_path):
+
+def set_stylesheet(app, style_path):
     file_qss = QtCore.QFile(style_path)
     if file_qss.exists():
         file_qss.open(QtCore.QFile.ReadOnly)
@@ -207,12 +200,8 @@ def setStyleSheet(app, style_path):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
-    app.setStyle("Plastique")
-    #qt_utils.setStyleSheet(app)
-    setStyleSheet(app, 'style.qss')
-    viewer = IMAGE_VIEWER_Widget()
-    viewer.setImage("//NWAVE/PROJECTS/SOB/RENDER_COMPO/ref_grading/200/comp/int/final/200_0060_int_ref_grading_final_l.0596.jpg")
-    #viewer.setImage("/home/vincent/branch.png")
+    #app.setStyle('Plastique')
+    set_stylesheet(app, 'style.qss')
+    viewer = ImageViewerWidget()
+    viewer.set_image('/home/vincentg/image.png')
     sys.exit(app.exec())
-    
-
