@@ -1,5 +1,3 @@
-
-
 QWidget
 {
     color: silver;
@@ -32,15 +30,18 @@ QAbstractScrollArea
 }
 
 
-QScrollBar {
+QScrollBar
+{
     /*border: 1px solid #222222;*/
 }
 
-QScrollBar:vertical {
+QScrollBar:vertical
+{
      margin: 15px 0 15px 0;
 }
 
-QScrollBar:horizontal {
+QScrollBar:horizontal
+{
      margin: 0px 15px 0 15px;
 }
 
@@ -63,19 +64,23 @@ QScrollBar::add-line, QScrollBar::sub-line
     margin: 1px;
 }
 
-QScrollBar::add-line:vertical {
+QScrollBar::add-line:vertical
+{
     subcontrol-position: bottom;
 }
 
-QScrollBar::add-line:horizontal {
+QScrollBar::add-line:horizontal
+{
     subcontrol-position: right;
 }
 
-QScrollBar::sub-line:vertical {
+QScrollBar::sub-line:vertical
+{
     subcontrol-position: top;
 }
 
-QScrollBar::sub-line:horizontal {
+QScrollBar::sub-line:horizontal
+{
     subcontrol-position: left;
 }
 
